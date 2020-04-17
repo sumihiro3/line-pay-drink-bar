@@ -1,0 +1,6 @@
+runtime: nodejs12
+
+instance_class: F2
+
+includes:
+  - app-base.yaml
