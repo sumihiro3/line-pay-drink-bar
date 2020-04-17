@@ -31,11 +31,15 @@ export default {
   methods: {
     async purchaseItem(item) {
       consola.log('purchaseItem called!', Object.assign({}, item))
-      await this.callsample()
-    },
-    async callsample() {
-      const usersJson = await this.$axios.$get(`/users`)
-      console.log(usersJson)
+      // TODO get userId from LIFF
+      const data = {
+        userId: 'DUMMY_USER9999',
+        item
+      }
+      const result = await this.$axios.$post(`/pay/request`, data)
+      consola.log('result', result)
+      // Move to LINE Pay payment page
+      window.location.href = result.paymentUrl
     }
   }
 }

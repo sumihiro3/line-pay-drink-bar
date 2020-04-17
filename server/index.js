@@ -1,18 +1,25 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
-const { v4: uuidv4 } = require('uuid')
-const LinePay = require('line-pay')
+// eslint-disable-next-line import/order
+const LinePay = require('./line-pay/line-pay')
 const firebase = require('firebase/app')
 require('firebase/firestore')
+const config = require('../nuxt.config.js')
+const payRouter = require('./pay')
 
+// Express
 const app = express()
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use('/pay', payRouter)
 
 // Import and Set Nuxt.js options
-const config = require('../nuxt.config.js')
 config.dev = process.env.NODE_ENV !== 'production'
 // Init Nuxt.js
 const nuxt = new Nuxt(config)
+app.locals.nuxt = nuxt
 
 // Init firebase/firestore
 if (!firebase.apps.length) {
@@ -31,6 +38,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(config)
 }
 const database = firebase.firestore()
+app.locals.database = database
 const itemsRef = database.collection('items')
 
 // LINE Pay
@@ -39,6 +47,7 @@ const payApi = new LinePay({
   channelSecret: process.env.LINE_PAY_CHANNEL_SECRET,
   isSandbox: true
 })
+app.locals.payApi = payApi
 
 app.get('/', (req, res) => {
   ;(async () => {
@@ -63,31 +72,6 @@ function getItems() {
       })
   })
 }
-
-app.get('/pay/request', (req, res) => {
-  const options = {
-    productName: 'Sample Product',
-    amount: 1,
-    currency: 'JPY',
-    orderId: uuidv4(),
-    confirmUrl: `https://${req.hostname}${req.baseUrl}/confirm`,
-    confirmUrlType: 'SERVER'
-  }
-  //
-  payApi.reserve(options).then((response) => {
-    const reservation = options
-    consola.log(`reserve result`, response)
-    reservation.transactionId = response.info.transactionId
-
-    consola.log(`Reservation was made. Detail is following.`)
-    consola.log(reservation)
-
-    res.redirect(response.info.paymentUrl.web)
-  })
-  // req.data = data
-  // const result = await nuxt.renderRoute('/hoge', { req })
-  // res.send(result.html)
-})
 
 // Start Express with Nuxt.js
 async function start() {
