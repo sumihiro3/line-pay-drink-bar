@@ -10,7 +10,6 @@ const config = require('../nuxt.config.js')
 const payRouter = require('./pay')
 
 // Show environment values
-console.log('DUMMY_VALUE', process.env.DUMMY_VALUE)
 console.log('BASE_URL', process.env.BASE_URL)
 console.log('API_BASE_URL', process.env.API_BASE_URL)
 console.log('USE_VCONSOLE', process.env.USE_VCONSOLE)
