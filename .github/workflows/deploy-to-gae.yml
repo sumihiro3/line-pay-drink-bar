@@ -47,9 +47,9 @@ jobs:
         FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
         LINE_PAY_CHANNEL_ID: ${{ secrets.LINE_PAY_CHANNEL_ID }}
         LINE_PAY_CHANNEL_SECRET: ${{ secrets.LINE_PAY_CHANNEL_SECRET }}
-        run: |
-          yarn run build
-          echo ${#FIREBASE_PROJECT_ID}
+      run: |
+        yarn run build
+        echo ${#FIREBASE_PROJECT_ID}
 
       - name: Deploy to GAE
         run: gcloud app deploy app.yaml --project ${{ secrets.FIREBASE_PROJECT_ID }}
