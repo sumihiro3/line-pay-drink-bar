@@ -72,6 +72,9 @@ module.exports = {
     baseURL: process.env.API_BASE_URL || 'http://api.example.com',
     browserBaseURL: process.env.API_BASE_URL || 'http://api.example.com'
   },
+  dotenv: {
+    path: process.cwd()
+  },
   env: {
     API_BASE_URL: process.env.API_BASE_URL || 'http://127.0.0.1:3000',
     USE_VCONSOLE: process.env.USE_VCONSOLE || false,
