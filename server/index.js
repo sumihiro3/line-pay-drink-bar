@@ -53,8 +53,13 @@ app.get('/', (req, res) => {
   ;(async () => {
     const items = await getItems()
     req.items = items
-    const result = await nuxt.renderRoute('/', { req })
-    res.send(result.html)
+    try {
+      const result = await nuxt.renderRoute('/', { req })
+      res.send(result.html)
+    } catch (error) {
+      consola.error('Error in nuxt.renderRoute', error)
+      Promise.reject(error)
+    }
   })()
 })
 

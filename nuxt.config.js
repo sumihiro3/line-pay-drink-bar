@@ -1,5 +1,9 @@
 /* eslint-disable nuxt/no-cjs-in-config */
 const colors = require('vuetify/es5/util/colors').default
+// load dotenv
+const dotEnvPath =
+  process.env.NODE_ENV !== 'production' ? '.env' : './config/.env.prod'
+require('dotenv').config({ path: dotEnvPath })
 
 module.exports = {
   mode: 'universal',
@@ -56,9 +60,9 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa'
+    '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    // '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv'
   ],
   /*
    ** Axios module configuration
