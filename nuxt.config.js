@@ -7,8 +7,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    title: 'LINE Pay Drink Bar',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -16,6 +15,13 @@ module.exports = {
         hid: 'description',
         name: 'description',
         content: process.env.npm_package_description || ''
+      }
+    ],
+    script: [
+      { src: 'https://static.line-scdn.net/liff/edge/2.1/sdk.js' },
+      {
+        src:
+          'https://cdnjs.cloudflare.com/ajax/libs/vConsole/3.3.4/vconsole.min.js'
       }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
@@ -31,7 +37,11 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [{ src: '~/plugins/axios.js' }],
+  plugins: [
+    { src: '~/plugins/axios.js' }
+    // ,
+    // { src: '~/plugins/liff.js' }
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -46,9 +56,9 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
+    // '@nuxtjs/dotenv'
   ],
   /*
    ** Axios module configuration
@@ -57,6 +67,22 @@ module.exports = {
   axios: {
     baseURL: process.env.API_BASE_URL || 'http://api.example.com',
     browserBaseURL: process.env.API_BASE_URL || 'http://api.example.com'
+  },
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL || 'http://127.0.0.1:3000',
+    USE_VCONSOLE: process.env.USE_VCONSOLE || false,
+    LIFF_ID: process.env.LIFF_ID || '',
+    FIREBASE_API_KEY: process.env.FIREBASE_API_KEY || '',
+    FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN || '',
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL || '',
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '',
+    FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET || '',
+    FIREBASE_MESSAGING_SENDER_ID:
+      process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID || '',
+    FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID || '',
+    LINE_PAY_CHANNEL_ID: process.env.LINE_PAY_CHANNEL_ID || '',
+    LINE_PAY_CHANNEL_SECRET: process.env.LINE_PAY_CHANNEL_SECRET || ''
   },
   /*
    ** vuetify module configuration

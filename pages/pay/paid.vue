@@ -12,13 +12,18 @@
       xl12
     )
       div
-        | {{ payStatus }}
+        | PAY_STATUS: {{ payStatus }}
       div
-        | {{ orderId }}
+        | ORDER_ID: {{ orderId }}
+      div
+        | LINE_USER_ID: {{ lineUserId }}
+      div
+        | TRANSACTION_ID: {{ transactionId }}
 </template>
 
 <script>
 import consola from 'consola'
+import getLineUserId from '~/plugins/liff'
 
 export default {
   components: {
@@ -36,20 +41,27 @@ export default {
   },
   data() {
     return {
-      // TODO get userId from LIFF
-      userId: 'DUMMY_USER9999',
+      lineUserId: null,
       transactionId: '',
       payStatus: '',
       orderId: ''
     }
   },
   async mounted() {
-    // finalize payment
-    const result = await this.$axios.$get(
-      `/pay/confirm?userId=${this.userId}&transactionId=${this.transactionId}`
-    )
-    this.payStatus = result.payStatus
-    this.orderId = result.orderId
+    const lineUserId = await getLineUserId()
+    if (!lineUserId) {
+      consola.log('Need to login!')
+      // eslint-disable-next-line no-undef
+      liff.login()
+    } else {
+      this.lineUserId = lineUserId
+      // finalize payment
+      const result = await this.$axios.$get(
+        `/pay/confirm?userId=${this.lineUserId}&transactionId=${this.transactionId}`
+      )
+      this.payStatus = result.payStatus
+      this.orderId = result.orderId
+    }
   },
   methods: {}
 }

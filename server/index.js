@@ -24,7 +24,7 @@ app.locals.nuxt = nuxt
 // Init firebase/firestore
 if (!firebase.apps.length) {
   console.log('Firebase Configs')
-  console.log('FIREBASE_API_KEY', process.env.FIREBASE_API_KEY)
+  console.log('FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID)
   const config = {
     apiKey: process.env.FIREBASE_API_KEY,
     authDomain: process.env.FIREBASE_AUTH_DOMAIN,

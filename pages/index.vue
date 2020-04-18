@@ -20,20 +20,38 @@
 <script>
 import consola from 'consola'
 import ItemList from '~/components/ItemList.vue'
+import getLineUserId from '~/plugins/liff'
 
 export default {
   components: {
     ItemList
   },
   asyncData(context) {
-    return { items: context.req.items }
+    return {
+      items: context.req.items
+    }
+  },
+  data() {
+    return {
+      items: null,
+      lineUserId: null
+    }
+  },
+  async mounted() {
+    const lineUserId = await getLineUserId()
+    if (!lineUserId) {
+      consola.log('Need to login!')
+      // eslint-disable-next-line no-undef
+      liff.login()
+    } else {
+      this.lineUserId = lineUserId
+    }
   },
   methods: {
     async purchaseItem(item) {
       consola.log('purchaseItem called!', Object.assign({}, item))
-      // TODO get userId from LIFF
       const data = {
-        userId: 'DUMMY_USER9999',
+        userId: this.lineUserId,
         item
       }
       const result = await this.$axios.$post(`/pay/request`, data)
