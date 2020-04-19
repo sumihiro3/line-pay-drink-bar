@@ -37,5 +37,5 @@ jobs:
       - name: Build module
         run: yarn build
 
-      - name: Deploy to GAE
+      - name: Deploy to Google App Engine
         run: gcloud app deploy app.yaml --project ${{ secrets.FIREBASE_PROJECT_ID }}
