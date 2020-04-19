@@ -37,22 +37,6 @@
             :lotteryResult="lotteryResult"
             v-show="dispenseDone"
           )
-    //- Show debug info
-    div.mt-10(
-      v-if="useVConsole === true"
-    )
-      h1.headline
-        | Debug info
-      div
-        | LINE_USER_ID: {{ lineUserId }}
-      div
-        | TRANSACTION_ID: {{ transactionId }}
-      div
-        | ORDER: {{ order }}
-      div(v-if="order")
-        | ORDER_ID: {{ order.id }}
-      div(v-if="order")
-        | PAY_STATUS: {{ order.payStatus }}
 </template>
 
 <script>

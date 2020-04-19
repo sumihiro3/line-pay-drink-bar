@@ -36,7 +36,7 @@ export default {
       const disappearLimit = max + progressPerIntervalTime * 10
       const interval = setInterval(() => {
         this.progress += progressPerIntervalTime
-        consola.log('Progress', this.progress)
+        consola.debug('Progress', this.progress)
         if (this.progress >= disappearLimit) {
           clearInterval(interval)
           this.$emit('dispenseProgressDone')
