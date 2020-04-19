@@ -37,7 +37,7 @@ module.exports = {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['animate.css/animate.min.css'],
   /*
    ** Plugins to load before mounting the App
    */
@@ -78,6 +78,7 @@ module.exports = {
   env: {
     API_BASE_URL: process.env.API_BASE_URL || 'http://127.0.0.1:3000',
     USE_VCONSOLE: process.env.USE_VCONSOLE || false,
+    SKIP_LOGIN: process.env.SKIP_LOGIN || false,
     LIFF_ID: process.env.LIFF_ID || '',
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY || '',
     FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN || '',

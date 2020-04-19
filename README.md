@@ -219,3 +219,21 @@ initialize vConsole in mounted
 USE_VCONSOLE=true
 ```
 
+## Animation for lottery
+
+### Install animate.css
+
+```bash
+yarn add animate.css
+```
+
+### Set CSS in nuxt.config.js
+
+```js
+css: ['animate.css/animate.min.css'],
+```
+
+### Create lottery component use vue transition and animate.css
+
+See [components/LotteryBox.vue](components/LotteryBox.vue)
+

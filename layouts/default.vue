@@ -8,7 +8,7 @@
         nuxt
     v-footer(:fixed="fixed" app)
       span
-        | &copy; {{ new Date().getFullYear() }} LINE API Experts
+        | &copy; {{ new Date().getFullYear() }} Sumihiro Kagawa
 </template>
 
 <script>
@@ -22,7 +22,7 @@ export default {
   },
   mounted() {
     consola.log('USE_VCONSOLE', process.env.USE_VCONSOLE)
-    if (process.env.USE_VCONSOLE) {
+    if (process.env.USE_VCONSOLE === 'true') {
       consola.log('Initializing vConsole')
       this.initVconsole()
     }

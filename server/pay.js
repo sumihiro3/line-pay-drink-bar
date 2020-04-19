@@ -53,7 +53,7 @@ async function generateOrder(userId, item) {
     amount: item.unitPrice,
     currency: 'JPY',
     orderedAt: new Date(),
-    prizeStatus: ''
+    lotteryResult: ''
   }
   return await setOrder(order)
 }
@@ -108,24 +108,37 @@ router.get('/confirm', async (req, res) => {
   const transactionId = req.query.transactionId
   const userId = req.query.userId
   consola.log('transactionId', transactionId)
-  let payStatus = 'PAYMENT_COMPLETED'
-  // get and update order info
+  // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
   consola.log('Update order to complete', order)
   if (order) {
-    order.payStatus = payStatus
+    // Draw Losts
+    order.payStatus = 'PAYMENT_COMPLETED'
     order.paidAt = new Date()
-    await setOrder(order)
+    order.lotteryResult = drawLots()
+    order.drawLotsAt = new Date()
   } else {
     // Order info not found
-    payStatus = 'PAYMENT_ERROR'
+    order.payStatus = 'PAYMENT_ERROR'
   }
-  // return payStatus
+  // Update Order
+  await setOrder(order)
+  // return Order info
   res.json({
-    payStatus,
-    orderId: order.id
+    order
   })
 })
+
+function drawLots() {
+  const max = 100
+  const min = 1
+  const draw = Math.floor(Math.random() * (max - min)) + min
+  let result = 'LOSE'
+  if (draw >= 33) {
+    result = 'WIN'
+  }
+  return result
+}
 
 // ------------------------------------
 // Firebase access functions
@@ -139,22 +152,6 @@ function setOrder(order) {
     resolve(order)
   })
 }
-
-// function getOrder(orderId) {
-//   return new Promise((resolve) => {
-//     const ordersRef = database.collection('orders')
-//     const orderRef = ordersRef.doc(orderId)
-//     orderRef.get().then((doc) => {
-//       if (!doc.exists) {
-//         const errorMessage = `Order[${orderId} does not exists]`
-//         console.error(errorMessage)
-//         throw new Error(errorMessage)
-//       } else {
-//         resolve(doc.data())
-//       }
-//     })
-//   })
-// }
 
 function getOrderByTransactionId(userId, transactionId) {
   return new Promise((resolve) => {

@@ -40,9 +40,13 @@ export default {
   async mounted() {
     const lineUserId = await getLineUserId()
     if (!lineUserId) {
-      consola.log('Need to login!')
-      // eslint-disable-next-line no-undef
-      liff.login()
+      if (process.env.SKIP_LOGIN === 'true') {
+        consola.warn('Skip LINE Login because of SKIP_LOGIN is set.')
+      } else {
+        consola.log('Need to login!')
+        // eslint-disable-next-line no-undef
+        liff.login()
+      }
     } else {
       this.lineUserId = lineUserId
     }
