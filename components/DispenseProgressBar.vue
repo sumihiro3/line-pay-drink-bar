@@ -2,7 +2,7 @@
   div
     v-progress-linear(
       v-model="progress"
-      color="success"
+      color="accent"
       height="64"
       rounded
     )
@@ -39,7 +39,7 @@ export default {
         consola.log('Progress', this.progress)
         if (this.progress >= disappearLimit) {
           clearInterval(interval)
-          this.$emit('progressDone')
+          this.$emit('dispenseProgressDone')
         }
       }, intervalTime)
     }

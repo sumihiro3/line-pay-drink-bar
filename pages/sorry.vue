@@ -1,10 +1,10 @@
 <template lang="pug">
   div
-    h1.bg_red
-      | Sorry
+    h1
+      | Sorry, something wrong...
 </template>
 
 <style lang="stylus">
-.bg_red
-  background-color #FF0000
+.bg_primary
+  background-color #008700
 </style>

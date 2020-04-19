@@ -1,11 +1,18 @@
 <template lang="pug">
   v-app
-    v-app-bar(fixed app color="success")
+    v-app-bar(fixed app color="primary")
       v-toolbar-title.white--text.font-weight-black(v-text="title")
       v-spacer
     v-content
       v-container
         nuxt
+      //- Progress Circle
+      v-overlay(:value="showProgressCircle" style="z-index:9999")
+        v-progress-circular(
+          :size="64"
+          color="accent"
+          indeterminate
+        )
     v-footer(:fixed="fixed" app)
       span
         | &copy; {{ new Date().getFullYear() }} Sumihiro Kagawa
@@ -18,6 +25,11 @@ export default {
     return {
       fixed: false,
       title: 'LINE Pay Drink Bar'
+    }
+  },
+  computed: {
+    showProgressCircle() {
+      return this.$store.state.showProgressCircle
     }
   },
   mounted() {

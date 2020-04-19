@@ -54,6 +54,7 @@ export default {
   methods: {
     async purchaseItem(item) {
       consola.log('purchaseItem called!', Object.assign({}, item))
+      this.$store.dispatch('progressCircleOn')
       const data = {
         userId: this.lineUserId,
         item

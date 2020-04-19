@@ -12,6 +12,19 @@
       transition(
         enter-active-class="bounceInDown"
         )
+        div.animated.mb-4.text-center(
+          v-if="showResult"
+        )
+          v-avatar(
+            size="128"
+            tile
+          )
+            v-img(
+                :src="getLotteryResultImage(lotteryResult)"
+              )
+      transition(
+        enter-active-class="bounceInDown"
+        )
         div.animated.display-1.font-weight-black.text-center(
           v-if="showResult"
         )
@@ -23,14 +36,25 @@
           v-if="showResult"
         )
           | {{ resultDescription }}
-      div
+    div(
+      v-if="!showResult"
+    )
+      div.mt-6
         v-layout(justify-center)
-          v-btn.mt-4(
-            block
-            color="success" 
+          v-avatar(
+            size="128"
+            tile
+          )
+            v-img(
+              src="https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_ki.png"
+            )
+      div.mt-6
+        v-layout(justify-center)
+          v-btn(
+            x-large
+            color="accent" 
             @click="showResult=true"
             dark
-            v-if="!showResult"
           )
             | 抽選する
 </template>
@@ -56,6 +80,16 @@ export default {
       this.resultDescription = 'おめでとうございます〜'
     }
   },
-  methods: {}
+  methods: {
+    getLotteryResultImage(result) {
+      let imgSrc =
+        'https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_hazure.png'
+      if (result) {
+        imgSrc =
+          'https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_atari.png'
+      }
+      return imgSrc
+    }
+  }
 }
 </script>

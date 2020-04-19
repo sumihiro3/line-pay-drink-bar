@@ -23,7 +23,7 @@
               v-card-actions
                 div.pl-2.mb-6.mt-4
                   v-btn(
-                    color="info"
+                    color="accent"
                     large
                     @click="purchaseItem(item)"
                   )

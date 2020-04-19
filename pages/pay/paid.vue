@@ -25,7 +25,7 @@
             )
         dispense-progress-bar.mt-4(
           :progressLimit="progressLimit"
-          @progressDone="progressDone"
+          @dispenseProgressDone="dispenseProgressDone"
         )
     //- Show lottery box after dispense finished
     v-card(
@@ -88,6 +88,7 @@ export default {
     }
   },
   async mounted() {
+    this.$store.dispatch('progressCircleOn')
     this.useVConsole = process.env.USE_VCONSOLE === 'true'
     const lineUserId = await getLineUserId()
     if (!lineUserId) {
@@ -111,13 +112,15 @@ export default {
     if (this.order.lotteryResult === 'WIN') {
       this.lotteryResult = true
     }
+    this.$store.dispatch('progressCircleOff')
   },
   methods: {
-    progressDone() {
-      consola.info('Progress done!!!')
+    dispenseProgressDone() {
+      consola.info('Dispense Progress done!!!')
       this.dispenseDone = true
     },
     getDummyOrder() {
+      // for Debug
       const order = {
         lotteryResult: 'LOSE',
         payStatus: 'PAYMENT_COMPLETED',
