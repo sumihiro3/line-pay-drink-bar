@@ -1,7 +1,7 @@
 {
   "name": "line-pay-drink-bar",
   "version": "1.0.0",
-  "description": "My grand Nuxt.js project",
+  "description": "LINE Pay Drink Bar is a sample product using LINE APIs.",
   "author": "sumihiro3",
   "private": true,
   "scripts": {

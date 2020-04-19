@@ -19,6 +19,28 @@ module.exports = {
         hid: 'description',
         name: 'description',
         content: process.env.npm_package_description || ''
+      },
+      {
+        hid: 'og:site_name',
+        property: 'og:site_name',
+        content: 'LINE Pay Drink Bar'
+      },
+      { hid: 'og:type', property: 'og:type', content: 'website' },
+      {
+        hid: 'og:url',
+        property: 'og:url',
+        content: 'https://linepaydrinkbar.an.r.appspot.com'
+      },
+      { hid: 'og:title', property: 'og:title', content: 'LINE Pay Drink Bar' },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: process.env.npm_package_description || ''
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://linepaydrinkbar.an.r.appspot.com/icon.png'
       }
     ],
     script: [
@@ -33,7 +55,7 @@ module.exports = {
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#fff' },
+  loading: { color: '#5ded47' },
   /*
    ** Global CSS
    */
