@@ -2,6 +2,11 @@ const express = require('express')
 const router = express.Router()
 const consola = require('consola')
 const { v4: uuidv4 } = require('uuid')
+const Obniz = require('obniz')
+
+// obniz setting values
+const obnizDeviceId = process.env.OBNIZ_DEVICE_ID
+const obnizApiToken = process.env.OBNIZ_API_TOKEN
 
 // firebase instance
 let database
@@ -112,6 +117,8 @@ router.get('/confirm', async (req, res) => {
   const order = await getOrderByTransactionId(userId, transactionId)
   consola.log('Update order to complete', order)
   if (order) {
+    // Dispense drink
+    dispenseDrink(order.item.slot, order.item.dispenseTime)
     // Draw Losts
     order.payStatus = 'PAYMENT_COMPLETED'
     order.paidAt = new Date()
@@ -128,6 +135,49 @@ router.get('/confirm', async (req, res) => {
     order
   })
 })
+
+const obnizSlotInfo = [
+  { forward: 0, back: 1 },
+  { forward: 2, back: 3 },
+  { forward: 4, back: 5 }
+]
+
+function dispenseDrink(slot, dispenseTime) {
+  return new Promise((resolve) => {
+    console.log('Initializing obniz...')
+    console.log('Slot', slot)
+    console.log('Dispense time', dispenseTime)
+    const obniz = new Obniz(obnizDeviceId, {
+      auto_connect: false,
+      access_token: obnizApiToken
+    })
+    obniz.connect()
+    obniz.onconnect = function() {
+      consola.info('Connected to your obniz device!! [', obnizDeviceId, ']')
+      obniz.display.clear()
+      obniz.display.print('LINE Pay Drink Bar')
+      // Dispense setting
+      const slotInfo = obnizSlotInfo[slot]
+      const forwardPort = slotInfo.forward
+      const backPort = slotInfo.back
+      // Start dispense
+      const motor = obniz.wired('DCMotor', {
+        forward: forwardPort,
+        back: backPort
+      })
+      obniz.display.clear()
+      obniz.display.print(`Dispensing at [Slot: ${slot}]`)
+      motor.power(100)
+      motor.forward()
+      setTimeout(function() {
+        // Dispense finished
+        motor.stop()
+        obniz.close()
+        resolve()
+      }, dispenseTime)
+    }
+  })
+}
 
 function drawLots() {
   const max = 100

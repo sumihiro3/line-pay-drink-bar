@@ -107,6 +107,7 @@ export default {
       )
       this.order = result.order
     }
+    this.progressLimit = this.order.item.dispenseTime
     if (this.order.lotteryResult === 'WIN') {
       this.lotteryResult = true
     }
@@ -128,6 +129,7 @@ export default {
           slot: 1,
           id: 'item-0002',
           description: 'みんな大好きオレンジジュース',
+          dispenseTime: 4000,
           unitPrice: 100,
           active: true,
           name: 'オレンジジュース',

@@ -237,3 +237,53 @@ css: ['animate.css/animate.min.css'],
 
 See [components/LotteryBox.vue](components/LotteryBox.vue)
 
+
+## Obniz
+
+### install obniz sdk
+
+```bash
+yarn add obniz
+```
+### implement dispense drink by DCMotor via obniz
+
+```js
+function dispenseDrink(slot, dispenseTime) {
+  return new Promise((resolve) => {
+    console.log('Initializing obniz...')
+    console.log('Slot', slot)
+    console.log('Dispense time', dispenseTime)
+    const obniz = new Obniz(obnizDeviceId, {
+      auto_connect: false,
+      access_token: obnizApiToken
+    })
+    obniz.connect()
+    obniz.onconnect = function() {
+      consola.info('Connected to your obniz device!! [', obnizDeviceId, ']')
+      obniz.display.clear()
+      obniz.display.print('LINE Pay Drink Bar')
+      // Dispense setting
+      const slotInfo = obnizSlotInfo[slot]
+      const forwardPort = slotInfo.forward
+      const backPort = slotInfo.back
+      // Start dispense
+      const motor = obniz.wired('DCMotor', {
+        forward: forwardPort,
+        back: backPort
+      })
+      obniz.display.clear()
+      obniz.display.print('Dispensing at Slot', slot)
+      motor.power(100)
+      motor.forward()
+      setTimeout(function() {
+        // Dispense finished
+        motor.stop()
+        obniz.close()
+        resolve()
+      }, dispenseTime)
+    }
+  })
+}
+```
+
+

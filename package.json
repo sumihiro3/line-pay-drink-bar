@@ -28,6 +28,7 @@
     "firebase": "^7.14.1",
     "lossless-json": "^1.0.3",
     "nuxt": "^2.0.0",
+    "obniz": "^3.4.1",
     "request": "^2.88.2",
     "uuid": "^7.0.3"
   },

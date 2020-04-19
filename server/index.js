@@ -28,6 +28,8 @@ console.log('FIREBASE_APP_ID', process.env.FIREBASE_APP_ID)
 console.log('FIREBASE_MEASUREMENT_ID', process.env.FIREBASE_MEASUREMENT_ID)
 console.log('LINE_PAY_CHANNEL_ID', process.env.LINE_PAY_CHANNEL_ID)
 console.log('LINE_PAY_CHANNEL_SECRET', process.env.LINE_PAY_CHANNEL_SECRET)
+console.log('OBNIZ_DEVICE_ID', process.env.OBNIZ_DEVICE_ID)
+console.log('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
 
 // Express
 const app = express()
