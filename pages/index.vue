@@ -20,7 +20,7 @@
 <script>
 import consola from 'consola'
 import ItemList from '~/components/ItemList.vue'
-import getLineUserId from '~/plugins/liff'
+import getLineUserId from '~/utils/liff'
 
 export default {
   components: {

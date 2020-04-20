@@ -43,7 +43,7 @@
 import consola from 'consola'
 import DispenseProgressBar from '~/components/DispenseProgressBar.vue'
 import LotteryBox from '~/components/LotteryBox.vue'
-import getLineUserId from '~/plugins/liff'
+import getLineUserId from '~/utils/liff'
 
 export default {
   components: {
