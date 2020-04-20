@@ -40,7 +40,7 @@ module.exports = {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://linepaydrinkbar.an.r.appspot.com/icon.png'
+        content: 'https://linepaydrinkbar.an.r.appspot.com/images/icon.png'
       }
     ],
     script: [

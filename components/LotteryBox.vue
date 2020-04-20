@@ -46,7 +46,7 @@
             tile
           )
             v-img(
-              src="https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_ki.png"
+              src="/images/fukubiki.png"
             )
       div.mt-6
         v-layout(justify-center)
@@ -82,11 +82,9 @@ export default {
   },
   methods: {
     getLotteryResultImage(result) {
-      let imgSrc =
-        'https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_hazure.png'
+      let imgSrc = '/images/fukubiki_hazure.png'
       if (result) {
-        imgSrc =
-          'https://my-qiita-images.s3-ap-northeast-1.amazonaws.com/line_things_drink_bar/fukubiki_atari.png'
+        imgSrc = '/images/fukubiki_atari.png'
       }
       return imgSrc
     }
