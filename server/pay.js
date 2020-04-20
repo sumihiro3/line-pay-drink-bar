@@ -115,8 +115,12 @@ router.get('/confirm', async (req, res) => {
   consola.log('transactionId', transactionId)
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
-  consola.log('Update order to complete', order)
-  if (order) {
+  // Pay Confirm
+  const payApi = req.app.locals.payApi
+  const confirmedOrder = await confirmPayment(payApi, order)
+  consola.log('Confirmed order', confirmedOrder)
+  if (confirmedOrder) {
+    consola.info('Payment completed!')
     // Dispense drink
     dispenseDrink(order.item.slot, order.item.dispenseTime)
     // Draw Losts
@@ -125,7 +129,8 @@ router.get('/confirm', async (req, res) => {
     order.lotteryResult = drawLots()
     order.drawLotsAt = new Date()
   } else {
-    // Order info not found
+    // Confirm failed
+    consola.error('Payment failed...')
     order.payStatus = 'PAYMENT_ERROR'
   }
   // Update Order
@@ -136,6 +141,35 @@ router.get('/confirm', async (req, res) => {
   })
 })
 
+function confirmPayment(payApi, order) {
+  return new Promise((resolve) => {
+    if (!order) {
+      // return null when Order is invalid
+      resolve(null)
+    }
+    // Confirm payment options
+    const options = {
+      transactionId: order.transactionId,
+      amount: order.amount,
+      currency: order.currency
+    }
+    payApi
+      .confirm(options)
+      .then((response) => {
+        consola.log('LINE Pay Confirm API Response', JSON.stringify(response))
+        // Pay complete
+        order.payStatus = 'PAYMENT_COMPLETED'
+        resolve(order)
+      })
+      .catch((error) => {
+        consola.error('Error at LINE Pay Confirm API', error)
+        // Return null when Confirm API failed
+        resolve(null)
+      })
+  })
+}
+
+// Set pin assign for DCMotors on your obniz Borad
 const obnizSlotInfo = [
   { forward: 0, back: 1 },
   { forward: 2, back: 3 },
@@ -172,6 +206,7 @@ function dispenseDrink(slot, dispenseTime) {
       setTimeout(function() {
         // Dispense finished
         motor.stop()
+        // Close obniz connection
         obniz.close()
         resolve()
       }, dispenseTime)
