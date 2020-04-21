@@ -149,18 +149,16 @@ script: [
 ],
 ```
 
-### implement liff initialize logic in plugin
+### implement liff initialize logic
 
-See [plugins/liff.js](plugins/liff.js)
+See [util/liff.js](util/liff.js)
 
-implement but do not set plugin in nuxt.config.js.
-Because liff cannot use before load window object...
+### call liff util method in page/component
 
-### call liff plugin method in page/component
-
-call liff plugin method on mounted.
+call liff util method on mounted.
 
 cannot use in asyncData ...
+Because liff cannot use before load window object...
 
 ```js
   async mounted() {
@@ -245,6 +243,7 @@ See [components/LotteryBox.vue](components/LotteryBox.vue)
 ```bash
 yarn add obniz
 ```
+
 ### implement dispense drink by DCMotor via obniz
 
 ```js
@@ -285,5 +284,3 @@ function dispenseDrink(slot, dispenseTime) {
   })
 }
 ```
-
-
