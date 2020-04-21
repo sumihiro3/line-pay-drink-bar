@@ -62,7 +62,6 @@ export default {
   },
   data() {
     return {
-      useVConsole: false,
       lineUserId: null,
       order: null,
       transactionId: '',
@@ -73,7 +72,6 @@ export default {
   },
   async mounted() {
     this.$store.dispatch('progressCircleOn')
-    this.useVConsole = process.env.USE_VCONSOLE === 'true'
     const lineUserId = await getLineUserId()
     if (!lineUserId) {
       if (process.env.SKIP_LOGIN === 'true') {
