@@ -2,11 +2,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
+const config = require('../nuxt.config.js')
 // eslint-disable-next-line import/order
-const LinePay = require('./line-pay/line-pay')
 const firebase = require('firebase/app')
 require('firebase/firestore')
-const config = require('../nuxt.config.js')
+const LinePay = require('./line-pay/line-pay')
 const payRouter = require('./pay')
 
 // Show environment values
@@ -60,7 +60,7 @@ if (!firebase.apps.length) {
 }
 const database = firebase.firestore()
 app.locals.database = database
-const itemsRef = database.collection('items')
+// const itemsRef = database.collection('items')
 
 // LINE Pay
 const payApi = new LinePay({
@@ -84,19 +84,10 @@ app.get('/', (req, res) => {
   })()
 })
 
+const itemsJson = require('./items.json')
 function getItems() {
-  return new Promise((resolve) => {
-    const items = []
-    itemsRef
-      .where('active', '==', true)
-      .get()
-      .then((query) => {
-        query.forEach((doc) => {
-          items.push(doc.data())
-        })
-        resolve(items)
-      })
-  })
+  consola.log('Loaded item list json', JSON.stringify(itemsJson))
+  return itemsJson
 }
 
 // Start Express with Nuxt.js
