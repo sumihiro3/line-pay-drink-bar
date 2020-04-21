@@ -106,7 +106,7 @@ function setupPayOption(req, item) {
   const options = {
     amount,
     currency: 'JPY',
-    orderId: uuidv4(),
+    orderId: `ORDER_${uuidv4()}`,
     packages,
     redirectUrls: {
       confirmUrl: `https://${req.hostname}${req.baseUrl}/paid`,
@@ -134,7 +134,7 @@ router.get('/confirm', async (req, res) => {
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
   // Pay Confirm
-  const confirmedOrder = await confirmPayment(payApi, order)
+  const confirmedOrder = await confirmPayment(order)
   consola.log('Confirmed order', confirmedOrder)
   if (confirmedOrder) {
     consola.info('Payment completed!')
@@ -158,7 +158,7 @@ router.get('/confirm', async (req, res) => {
   })
 })
 
-function confirmPayment(payApi, order) {
+function confirmPayment(order) {
   return new Promise((resolve) => {
     if (!order) {
       // return null when Order is invalid
