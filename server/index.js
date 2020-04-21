@@ -3,10 +3,6 @@ const bodyParser = require('body-parser')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
-// eslint-disable-next-line import/order
-const firebase = require('firebase/app')
-require('firebase/firestore')
-const LinePay = require('./line-pay/line-pay')
 const payRouter = require('./pay')
 
 // Show environment values
@@ -43,36 +39,9 @@ config.dev = process.env.NODE_ENV !== 'production'
 const nuxt = new Nuxt(config)
 app.locals.nuxt = nuxt
 
-// Init firebase/firestore
-if (!firebase.apps.length) {
-  console.log('Firebase Configs')
-  const config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-  }
-  firebase.initializeApp(config)
-}
-const database = firebase.firestore()
-app.locals.database = database
-// const itemsRef = database.collection('items')
-
-// LINE Pay
-const payApi = new LinePay({
-  channelId: process.env.LINE_PAY_CHANNEL_ID,
-  channelSecret: process.env.LINE_PAY_CHANNEL_SECRET,
-  isSandbox: true
-})
-app.locals.payApi = payApi
-
 app.get('/', (req, res) => {
   ;(async () => {
-    const items = await getItems()
+    const items = getItems()
     req.items = items
     try {
       const result = await nuxt.renderRoute('/', { req })

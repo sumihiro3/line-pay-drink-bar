@@ -2,19 +2,41 @@ const express = require('express')
 const router = express.Router()
 const consola = require('consola')
 const { v4: uuidv4 } = require('uuid')
+const firebase = require('firebase/app')
+require('firebase/firestore')
 const Obniz = require('obniz')
+const LinePay = require('./line-pay/line-pay')
 
 // obniz setting values
 const obnizDeviceId = process.env.OBNIZ_DEVICE_ID
 const obnizApiToken = process.env.OBNIZ_API_TOKEN
 
-// firebase instance
-let database
+// Init firebase/firestore
+if (!firebase.apps.length) {
+  console.log('Firebase Configs')
+  const config = {
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  }
+  firebase.initializeApp(config)
+}
+const database = firebase.firestore()
+const ordersRef = database.collection('orders')
+
+// LINE Pay
+const payApi = new LinePay({
+  channelId: process.env.LINE_PAY_CHANNEL_ID,
+  channelSecret: process.env.LINE_PAY_CHANNEL_SECRET,
+  isSandbox: true
+})
 
 router.post('/request', async (req, res) => {
-  if (!database) {
-    database = req.app.locals.database
-  }
   const data = req.body
   consola.log('Passed data', data)
   const item = data.item
@@ -22,7 +44,6 @@ router.post('/request', async (req, res) => {
   // set Order info before Pay Request
   const order = await generateOrder(userId, item)
   const payOptions = setupPayOption(req, item)
-  const payApi = req.app.locals.payApi
   await payApi
     .request(payOptions)
     .then(async (response) => {
@@ -106,9 +127,6 @@ function setupPayOption(req, item) {
 }
 
 router.get('/confirm', async (req, res) => {
-  if (!database) {
-    database = req.app.locals.database
-  }
   await consola.log(`Pay Confirm called!`)
   const transactionId = req.query.transactionId
   const userId = req.query.userId
@@ -116,7 +134,6 @@ router.get('/confirm', async (req, res) => {
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
   // Pay Confirm
-  const payApi = req.app.locals.payApi
   const confirmedOrder = await confirmPayment(payApi, order)
   consola.log('Confirmed order', confirmedOrder)
   if (confirmedOrder) {
@@ -231,7 +248,6 @@ function drawLots() {
 
 function setOrder(order) {
   return new Promise((resolve) => {
-    const ordersRef = database.collection('orders')
     console.log('Add order', order)
     ordersRef.doc(order.id).set(Object.assign({}, order))
     resolve(order)
@@ -240,7 +256,6 @@ function setOrder(order) {
 
 function getOrderByTransactionId(userId, transactionId) {
   return new Promise((resolve) => {
-    const ordersRef = database.collection('orders')
     ordersRef
       .where('userId', '==', userId)
       .where('transactionId', '==', transactionId)
