@@ -126,10 +126,11 @@ function setupPayOption(req, item) {
   return options
 }
 
-router.get('/confirm', async (req, res) => {
-  await consola.log(`Pay Confirm called!`)
-  const transactionId = req.query.transactionId
-  const userId = req.query.userId
+router.post('/confirm', async (req, res) => {
+  const data = req.body
+  consola.log('Passed data', data)
+  const transactionId = data.transactionId
+  const userId = data.userId
   consola.log('transactionId', transactionId)
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)

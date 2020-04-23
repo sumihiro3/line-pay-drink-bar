@@ -85,9 +85,12 @@ export default {
     } else {
       this.lineUserId = lineUserId
       // finalize payment
-      const result = await this.$axios.$get(
-        `/pay/confirm?userId=${this.lineUserId}&transactionId=${this.transactionId}`
-      )
+      const data = {
+        userId: this.lineUserId,
+        transactionId: this.transactionId
+      }
+      const result = await this.$axios.$post(`/pay/confirm`, data)
+      consola.log('result', result)
       this.order = result.order
     }
     this.progressLimit = this.order.item.dispenseTime
