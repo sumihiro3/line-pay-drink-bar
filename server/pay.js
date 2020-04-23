@@ -187,7 +187,7 @@ function confirmPayment(order) {
   })
 }
 
-// Set pin assign for DCMotors on your obniz Borad
+// Set pin assign for DCMotors on your obniz Board
 const obnizSlotInfo = [
   { forward: 0, back: 1 },
   { forward: 2, back: 3 },
