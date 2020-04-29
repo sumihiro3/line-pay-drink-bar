@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+const Router = require('express-promise-router')
+const router = new Router()
 const consola = require('consola')
 const { v4: uuidv4 } = require('uuid')
 const firebase = require('firebase/app')
