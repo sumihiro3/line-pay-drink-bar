@@ -3,7 +3,7 @@
     v-app-bar(fixed app color="primary")
       v-toolbar-title.white--text.font-weight-black(v-text="title")
       v-spacer
-    v-content
+    v-main
       v-container
         nuxt
       //- Progress Circle
