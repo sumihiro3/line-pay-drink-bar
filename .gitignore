@@ -96,3 +96,6 @@ ServiceAccount.json
 
 # GAE environment values
 gae-envs.yaml
+
+# localhost pem
+localhost*.pem

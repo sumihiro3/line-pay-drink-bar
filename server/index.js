@@ -74,10 +74,26 @@ async function start() {
   app.use(nuxt.render)
 
   // Listen the server
-  app.listen(port, host)
-  consola.ready({
-    message: `Server listening on http://${host}:${port}`,
-    badge: true
-  })
+  if (process.env.NODE_ENV === 'dev-local') {
+    // enable HTTPS on localhost when development mode
+    const fs = require('fs')
+    const https = require('https')
+    // https config
+    const httpsOptions = {
+      key: fs.readFileSync(`${__dirname}/localhost-key.pem`),
+      cert: fs.readFileSync(`${__dirname}/localhost.pem`)
+    }
+    https.createServer(httpsOptions, app).listen(port, host)
+    consola.ready({
+      message: `Server listening on https://${host}:${port}`,
+      badge: true
+    })
+  } else {
+    app.listen(port, host)
+    consola.ready({
+      message: `Server listening on http://${host}:${port}`,
+      badge: true
+    })
+  }
 }
 start()
