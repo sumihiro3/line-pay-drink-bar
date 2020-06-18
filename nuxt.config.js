@@ -52,6 +52,16 @@ module.exports = {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
+  // PWA Setting
+  manifest: {
+    name: 'LINE Pay Drink Bar',
+    lang: 'ja',
+    short_name: 'LINE Pay Drink Bar',
+    title: 'LINE Pay Drink Bar',
+    description: 'LINE Pay Drink Bar is a sample product using LINE APIs.',
+    theme_color: '#ffffff',
+    background_color: '#ffffff'
+  },
   /*
    ** Customize the progress-bar color
    */
