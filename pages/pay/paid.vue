@@ -52,10 +52,7 @@ export default {
   },
   asyncData(context) {
     consola.log('transactionId', context.query.transactionId)
-    let transactionId = context.query.transactionId
-    if (Array.isArray(transactionId)) {
-      transactionId = transactionId[0]
-    }
+    const transactionId = context.query.transactionId
     return {
       transactionId
     }
