@@ -37,6 +37,14 @@
             :lotteryResult="lotteryResult"
             v-show="dispenseDone"
           )
+      v-card-actions
+        v-layout(justify-center)
+          v-btn.mt-2(
+            v-show="dispenseDone"
+            link
+            href="/"
+          )
+            | もう一度購入する
 </template>
 
 <script>
