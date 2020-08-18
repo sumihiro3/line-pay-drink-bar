@@ -1,27 +1,32 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
 const payRouter = require('./pay')
+const bunyan = require('bunyan')
+
+//
+const logger = bunyan.createLogger({
+  name: 'LinePayDrinkBar',
+})
 
 
 // Show environment values
-console.log('Show environment values')
-console.log('BASE_URL', process.env.BASE_URL)
-console.log('API_BASE_URL', process.env.API_BASE_URL)
-console.log('USE_VCONSOLE', process.env.USE_VCONSOLE)
-console.log('SKIP_LOGIN', process.env.SKIP_LOGIN)
-console.log('LIFF_ID', process.env.LIFF_ID)
-console.log('LIFF_CHANNEL_ID', process.env.LIFF_CHANNEL_ID)
-console.log('FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID)
-console.log('FIREBASE_DATABASE_URL', process.env.FIREBASE_DATABASE_URL)
-console.log('FIREBASE_PRIVATE_KEY', process.env.FIREBASE_PRIVATE_KEY)
-console.log('FIREBASE_CLIENT_EMAIL', process.env.FIREBASE_CLIENT_EMAIL)
-console.log('LINE_PAY_CHANNEL_ID', process.env.LINE_PAY_CHANNEL_ID)
-console.log('LINE_PAY_CHANNEL_SECRET', process.env.LINE_PAY_CHANNEL_SECRET)
-console.log('OBNIZ_DEVICE_ID', process.env.OBNIZ_DEVICE_ID)
-console.log('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
+logger.info('Show environment values')
+logger.info('BASE_URL', process.env.BASE_URL)
+logger.info('API_BASE_URL', process.env.API_BASE_URL)
+logger.info('USE_VCONSOLE', process.env.USE_VCONSOLE)
+logger.info('SKIP_LOGIN', process.env.SKIP_LOGIN)
+logger.info('LIFF_ID', process.env.LIFF_ID)
+logger.info('LIFF_CHANNEL_ID', process.env.LIFF_CHANNEL_ID)
+logger.info('FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID)
+logger.info('FIREBASE_DATABASE_URL', process.env.FIREBASE_DATABASE_URL)
+logger.info('FIREBASE_PRIVATE_KEY', process.env.FIREBASE_PRIVATE_KEY)
+logger.info('FIREBASE_CLIENT_EMAIL', process.env.FIREBASE_CLIENT_EMAIL)
+logger.info('LINE_PAY_CHANNEL_ID', process.env.LINE_PAY_CHANNEL_ID)
+logger.info('LINE_PAY_CHANNEL_SECRET', process.env.LINE_PAY_CHANNEL_SECRET)
+logger.info('OBNIZ_DEVICE_ID', process.env.OBNIZ_DEVICE_ID)
+logger.info('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
 
 // Express
 const app = express()
