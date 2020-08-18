@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
-const payRouter = require('./pay')
 const bunyan = require('bunyan')
 const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 
@@ -39,6 +38,7 @@ logger.info('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+const payRouter = require('./pay')
 app.use('/pay', payRouter)
 
 // Import and Set Nuxt.js options
