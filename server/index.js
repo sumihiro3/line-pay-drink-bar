@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
 const bunyan = require('bunyan')
@@ -29,6 +30,7 @@ logger.info('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
 
 // Express
 const app = express()
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 const payRouter = require('./pay')

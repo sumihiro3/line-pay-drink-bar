@@ -24,6 +24,7 @@
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",
     "consola": "^2.11.3",
+    "cors": "^2.8.5",
     "cross-env": "^5.2.0",
     "debug": "^4.1.1",
     "express": "^4.16.4",
