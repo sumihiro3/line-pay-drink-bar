@@ -98,7 +98,8 @@ module.exports = {
    */
   axios: {
     baseURL: process.env.API_BASE_URL || 'http://api.example.com',
-    browserBaseURL: process.env.API_BASE_URL || 'http://api.example.com'
+    browserBaseURL: process.env.API_BASE_URL || 'http://api.example.com',
+    credentials: false
   },
   // dotenv: {
   //   path: process.cwd()
