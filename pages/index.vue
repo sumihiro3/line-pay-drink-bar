@@ -20,7 +20,7 @@
 <script>
 import consola from 'consola'
 import ItemList from '~/components/ItemList.vue'
-import getLineUserId from '~/utils/liff'
+import getLineAccessToken from '~/utils/liff'
 
 export default {
   components: {
@@ -34,12 +34,12 @@ export default {
   data() {
     return {
       items: null,
-      lineUserId: null
+      accessToken: null
     }
   },
   async mounted() {
-    const lineUserId = await getLineUserId()
-    if (!lineUserId) {
+    const accessToken = await getLineAccessToken()
+    if (!accessToken) {
       if (process.env.SKIP_LOGIN === 'true') {
         consola.warn('Skip LINE Login because of SKIP_LOGIN is set.')
       } else {
@@ -48,7 +48,7 @@ export default {
         liff.login()
       }
     } else {
-      this.lineUserId = lineUserId
+      this.accessToken = accessToken
     }
   },
   methods: {
@@ -56,7 +56,7 @@ export default {
       consola.log('purchaseItem called!', Object.assign({}, item))
       this.$store.dispatch('progressCircleOn')
       const data = {
-        userId: this.lineUserId,
+        accessToken: this.accessToken,
         item
       }
       const result = await this.$axios.$post(`/pay/request`, data)

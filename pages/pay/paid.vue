@@ -51,7 +51,7 @@
 import consola from 'consola'
 import DispenseProgressBar from '~/components/DispenseProgressBar.vue'
 import LotteryBox from '~/components/LotteryBox.vue'
-import getLineUserId from '~/utils/liff'
+import getLineAccessToken from '~/utils/liff'
 
 export default {
   components: {
@@ -67,7 +67,7 @@ export default {
   },
   data() {
     return {
-      lineUserId: null,
+      accessToken: null,
       order: null,
       transactionId: '',
       progressLimit: 3000,
@@ -77,8 +77,8 @@ export default {
   },
   async mounted() {
     this.$store.dispatch('progressCircleOn')
-    const lineUserId = await getLineUserId()
-    if (!lineUserId) {
+    const accessToken = await getLineAccessToken()
+    if (!accessToken) {
       if (process.env.SKIP_LOGIN === 'true') {
         consola.warn('Skip LINE Login because of SKIP_LOGIN is set.')
         this.order = this.getDummyOrder()
@@ -88,10 +88,10 @@ export default {
         liff.login()
       }
     } else {
-      this.lineUserId = lineUserId
+      this.accessToken = accessToken
       // finalize payment
       const data = {
-        userId: this.lineUserId,
+        accessToken: this.accessToken,
         transactionId: this.transactionId
       }
       const result = await this.$axios.$post(`/pay/confirm`, data)

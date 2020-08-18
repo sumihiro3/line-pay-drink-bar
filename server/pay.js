@@ -2,31 +2,27 @@ const Router = require('express-promise-router')
 const router = new Router()
 const consola = require('consola')
 const { v4: uuidv4 } = require('uuid')
-const firebase = require('firebase/app')
-require('firebase/firestore')
+const admin = require("firebase-admin")
 const Obniz = require('obniz')
 const LinePay = require('./line-pay/line-pay')
+let request = require('request')
+const Promise = require('bluebird')
+Promise.promisifyAll(request)
 
 // obniz setting values
 const obnizDeviceId = process.env.OBNIZ_DEVICE_ID
 const obnizApiToken = process.env.OBNIZ_API_TOKEN
 
-// Init firebase/firestore
-if (!firebase.apps.length) {
-  console.log('Firebase Configs')
-  const config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-  }
-  firebase.initializeApp(config)
-}
-const database = firebase.firestore()
+// Initialize firebase-admin
+admin.initializeApp({
+  credential: admin.credential.cert({
+    "project_id": process.env.FIREBASE_PROJECT_ID,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY,
+    "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+  }),
+  databaseURL: process.env.FIREBASE_DATABASE_URL
+});
+const database = admin.firestore()
 const ordersRef = database.collection('orders')
 
 // LINE Pay
@@ -40,7 +36,9 @@ router.post('/request', async (req, res) => {
   const data = req.body
   consola.log('Passed data', data)
   const item = data.item
-  const userId = data.userId
+  const accessToken = data.accessToken
+  const userId = await verifyAndGetLineUserId(accessToken)
+  consola.log('LINE userId', userId)
   // set Order info before Pay Request
   const order = await generateOrder(userId, item)
   const payOptions = setupPayOption(req, item)
@@ -109,9 +107,9 @@ function setupPayOption(req, item) {
     orderId: `ORDER_${uuidv4()}`,
     packages,
     redirectUrls: {
-      confirmUrl: `https://${req.hostname}${req.baseUrl}/paid`,
+      confirmUrl: `https://${req.get('Host')}${req.baseUrl}/paid`,
       confirmUrlType: 'CLIENT',
-      cancelUrl: `https://${req.hostname}${req.baseUrl}/cancel`
+      cancelUrl: `https://${req.get('Host')}${req.baseUrl}/cancel`
     },
     options: {
       display: {
@@ -130,8 +128,9 @@ router.post('/confirm', async (req, res) => {
   const data = req.body
   consola.log('Passed data', data)
   const transactionId = data.transactionId
-  const userId = data.userId
   consola.log('transactionId', transactionId)
+  const accessToken = data.accessToken
+  const userId = await verifyAndGetLineUserId(accessToken)
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
   // Pay Confirm
@@ -141,7 +140,7 @@ router.post('/confirm', async (req, res) => {
     consola.info('Payment completed!')
     // Dispense drink
     dispenseDrink(order.item.slot, order.item.dispenseTime)
-    // Draw Losts
+    // Draw Lots
     order.payStatus = 'PAYMENT_COMPLETED'
     order.paidAt = new Date()
     order.lotteryResult = drawLots()
@@ -241,6 +240,67 @@ function drawLots() {
     result = 'WIN'
   }
   return result
+}
+
+// ------------------------------------
+// LINE API functions
+// ------------------------------------
+
+async function verifyAndGetLineUserId(accessToken) {
+  try {
+    await verifyAccessToken(accessToken)
+  } catch (error) {
+    consola.error('Verify access token failed...', error)
+    return new Error('Verify access token failed...', error)
+  }
+  try {
+    const profile = await getLineProfile(accessToken)
+    return profile.userId
+  } catch (error) {
+    consola.error('Get LINE user id failed...', error)
+    return new Error('Get LINE user id failed...', error)
+  }
+}
+
+async function verifyAccessToken(accessToken) {
+  const url = `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
+  return request.getAsync({url, json: true}).then((response) => {
+    consola.log('Response', response.body)
+    consola.log('Status Code', response.statusCode)
+    if (response.statusCode !== 200) {
+      consola.error(response.body.error_description)
+      return Promise.reject(new Error(response.body.error))
+    }
+    // Check client_id
+    if (response.body.client_id !== process.env.LIFF_CHANNEL_ID) {
+      return Promise.reject(new Error(`client_id does not match...: ${client_id}`))
+    }
+    // Check expire or not
+    if (response.body.expires_in < 0) {
+      throw new Error('access token is expired.')
+    }
+  })
+}
+
+async function getLineProfile(accessToken) {
+  const url = `https://api.line.me/v2/profile`
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`
+  }
+  return request.getAsync({
+    url,
+    headers,
+    json: true
+  }).then((response) => {
+    consola.log('Response', response.body)
+    consola.log('Status Code', response.statusCode)
+    if (response.statusCode !== 200) {
+      consola.error(response.body.error_description)
+      return Promise.reject(new Error(response.body.error))
+    }
+    consola.log('LINE Profile', response.body)
+    return response.body
+  })
 }
 
 // ------------------------------------

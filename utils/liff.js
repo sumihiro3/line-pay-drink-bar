@@ -1,19 +1,17 @@
 const consola = require('consola')
 const liffId = process.env.LIFF_ID
 
-function getLineUserId() {
+function getLineAccessToken() {
   return new Promise((resolve) => {
     consola.log('LIFF_ID', liffId)
-    /* eslint no-undef: 0 */
+    const liff = window.liff
     liff
       .init({ liffId })
       .then(async () => {
         consola.log('LIFF initialized!')
-        const context = await liff.getContext()
-        consola.info('LIFF Context', context)
-        const lineUserId = context.userId
-        consola.info('LINE USER ID', lineUserId)
-        resolve(lineUserId)
+        const accessToken = await liff.getAccessToken()
+        consola.info('LINE Access token', accessToken)
+        resolve(accessToken)
       })
       .catch((err) => {
         consola.warn('LIFF initialization failed', err)
@@ -22,4 +20,4 @@ function getLineUserId() {
   })
 }
 
-export default getLineUserId
+export default getLineAccessToken

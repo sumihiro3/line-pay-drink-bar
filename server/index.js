@@ -5,27 +5,22 @@ const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
 const payRouter = require('./pay')
 
+
 // Show environment values
-console.log('BASE_URL', process.env.BASE_URL)
-console.log('API_BASE_URL', process.env.API_BASE_URL)
-console.log('USE_VCONSOLE', process.env.USE_VCONSOLE)
-console.log('SKIP_LOGIN', process.env.SKIP_LOGIN)
-console.log('LIFF_ID', process.env.LIFF_ID)
-console.log('FIREBASE_API_KEY', process.env.FIREBASE_API_KEY)
-console.log('FIREBASE_AUTH_DOMAIN', process.env.FIREBASE_AUTH_DOMAIN)
-console.log('FIREBASE_DATABASE_URL', process.env.FIREBASE_DATABASE_URL)
-console.log('FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID)
-console.log('FIREBASE_STORAGE_BUCKET', process.env.FIREBASE_STORAGE_BUCKET)
-console.log(
-  'FIREBASE_MESSAGING_SENDER_ID',
-  process.env.FIREBASE_MESSAGING_SENDER_ID
-)
-console.log('FIREBASE_APP_ID', process.env.FIREBASE_APP_ID)
-console.log('FIREBASE_MEASUREMENT_ID', process.env.FIREBASE_MEASUREMENT_ID)
-console.log('LINE_PAY_CHANNEL_ID', process.env.LINE_PAY_CHANNEL_ID)
-console.log('LINE_PAY_CHANNEL_SECRET', process.env.LINE_PAY_CHANNEL_SECRET)
-console.log('OBNIZ_DEVICE_ID', process.env.OBNIZ_DEVICE_ID)
-console.log('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
+consola.log('BASE_URL', process.env.BASE_URL)
+consola.log('API_BASE_URL', process.env.API_BASE_URL)
+consola.log('USE_VCONSOLE', process.env.USE_VCONSOLE)
+consola.log('SKIP_LOGIN', process.env.SKIP_LOGIN)
+consola.log('LIFF_ID', process.env.LIFF_ID)
+consola.log('LIFF_CHANNEL_ID', process.env.LIFF_CHANNEL_ID)
+consola.log('FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID)
+consola.log('FIREBASE_DATABASE_URL', process.env.FIREBASE_DATABASE_URL)
+consola.log('FIREBASE_PRIVATE_KEY', process.env.FIREBASE_PRIVATE_KEY)
+consola.log('FIREBASE_CLIENT_EMAIL', process.env.FIREBASE_CLIENT_EMAIL)
+consola.log('LINE_PAY_CHANNEL_ID', process.env.LINE_PAY_CHANNEL_ID)
+consola.log('LINE_PAY_CHANNEL_SECRET', process.env.LINE_PAY_CHANNEL_SECRET)
+consola.log('OBNIZ_DEVICE_ID', process.env.OBNIZ_DEVICE_ID)
+consola.log('OBNIZ_API_TOKEN', process.env.OBNIZ_API_TOKEN)
 
 // Express
 const app = express()
