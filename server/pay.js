@@ -1,19 +1,18 @@
 const Router = require('express-promise-router')
 const router = new Router()
-const consola = require('consola')
 const { v4: uuidv4 } = require('uuid')
-const admin = require("firebase-admin")
+const admin = require('firebase-admin')
 const Obniz = require('obniz')
-const LinePay = require('./line-pay/line-pay')
-let request = require('request')
+const request = require('request')
 const Promise = require('bluebird')
 Promise.promisifyAll(request)
 
 const bunyan = require('bunyan')
+const LinePay = require('./line-pay/line-pay')
 
 // Initialize logger
 const logger = bunyan.createLogger({
-  name: 'LinePayDrinkBar-Pay',
+  name: 'LinePayDrinkBar-Pay'
 })
 
 // obniz setting values
@@ -25,16 +24,16 @@ if (process.env.NODE_ENV === 'production') {
   admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
+  })
 } else {
   admin.initializeApp({
     credential: admin.credential.cert({
-      "project_id": process.env.FIREBASE_PROJECT_ID,
-      "private_key": process.env.FIREBASE_PRIVATE_KEY,
-      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+      project_id: process.env.FIREBASE_PROJECT_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY,
+      client_email: process.env.FIREBASE_CLIENT_EMAIL
     }),
     databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
+  })
 }
 const database = admin.firestore()
 const ordersRef = database.collection('orders')
@@ -278,7 +277,7 @@ async function verifyAndGetLineUserId(accessToken) {
 
 async function verifyAccessToken(accessToken) {
   const url = `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
-  return request.getAsync({url, json: true}).then((response) => {
+  return await request.getAsync({ url, json: true }).then((response) => {
     logger.info('Response', response.body)
     logger.info('Status Code', response.statusCode)
     if (response.statusCode !== 200) {
@@ -287,7 +286,9 @@ async function verifyAccessToken(accessToken) {
     }
     // Check client_id
     if (response.body.client_id !== process.env.LIFF_CHANNEL_ID) {
-      return Promise.reject(new Error(`client_id does not match...: ${client_id}`))
+      return Promise.reject(
+        new Error(`client_id does not match...: ${response.body.client_id}`)
+      )
     }
     // Check expire or not
     if (response.body.expires_in < 0) {
@@ -299,22 +300,24 @@ async function verifyAccessToken(accessToken) {
 async function getLineProfile(accessToken) {
   const url = `https://api.line.me/v2/profile`
   const headers = {
-    'Authorization': `Bearer ${accessToken}`
+    Authorization: `Bearer ${accessToken}`
   }
-  return request.getAsync({
-    url,
-    headers,
-    json: true
-  }).then((response) => {
-    logger.info('Response', response.body)
-    logger.info('Status Code', response.statusCode)
-    if (response.statusCode !== 200) {
-      logger.error(response.body.error_description)
-      return Promise.reject(new Error(response.body.error))
-    }
-    logger.info('LINE Profile', response.body)
-    return response.body
-  })
+  return await request
+    .getAsync({
+      url,
+      headers,
+      json: true
+    })
+    .then((response) => {
+      logger.info('Response', response.body)
+      logger.info('Status Code', response.statusCode)
+      if (response.statusCode !== 200) {
+        logger.error(response.body.error_description)
+        return Promise.reject(new Error(response.body.error))
+      }
+      logger.info('LINE Profile', response.body)
+      return response.body
+    })
 }
 
 // ------------------------------------

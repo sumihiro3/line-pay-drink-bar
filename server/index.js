@@ -2,13 +2,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const { Nuxt, Builder } = require('nuxt')
-const config = require('../nuxt.config.js')
 const bunyan = require('bunyan')
+const config = require('../nuxt.config.js')
 // const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 
 // Initialize logger
 const logger = bunyan.createLogger({
-  name: 'LinePayDrinkBar',
+  name: 'LinePayDrinkBar'
 })
 
 // Show environment values
