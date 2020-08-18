@@ -4,12 +4,19 @@ const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
 const payRouter = require('./pay')
 const bunyan = require('bunyan')
+const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 
 //
+const loggingBunyan = new LoggingBunyan()
 const logger = bunyan.createLogger({
   name: 'LinePayDrinkBar',
+  streams: [
+    // Log to the console at 'info' and above
+    {stream: process.stdout, level: 'info'},
+    // And log to Stackdriver Logging, logging at 'info' and above
+    loggingBunyan.stream('info'),
+  ],
 })
-
 
 // Show environment values
 logger.info('Show environment values')
@@ -48,7 +55,7 @@ app.get('/', (req, res) => {
       const result = await nuxt.renderRoute('/', { req })
       res.send(result.html)
     } catch (error) {
-      consola.error('Error in nuxt.renderRoute', error)
+      logger.error('Error in nuxt.renderRoute', error)
       Promise.reject(error)
     }
   })()
@@ -56,7 +63,7 @@ app.get('/', (req, res) => {
 
 const itemsJson = require('./items.json')
 function getItems() {
-  consola.log('Loaded item list json', JSON.stringify(itemsJson))
+  logger.info('Loaded item list json', JSON.stringify(itemsJson))
   return itemsJson
 }
 
@@ -85,13 +92,13 @@ async function start() {
       cert: fs.readFileSync(`${__dirname}/localhost.pem`)
     }
     https.createServer(httpsOptions, app).listen(port, host)
-    consola.ready({
+    logger.info({
       message: `Server listening on https://${host}:${port}`,
       badge: true
     })
   } else {
     app.listen(port, host)
-    consola.ready({
+    logger.info({
       message: `Server listening on http://${host}:${port}`,
       badge: true
     })

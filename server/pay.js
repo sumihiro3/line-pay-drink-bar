@@ -9,6 +9,21 @@ let request = require('request')
 const Promise = require('bluebird')
 Promise.promisifyAll(request)
 
+const bunyan = require('bunyan')
+const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
+
+//
+const loggingBunyan = new LoggingBunyan()
+const logger = bunyan.createLogger({
+  name: 'LinePayDrinkBar-Pay',
+  streams: [
+    // Log to the console at 'info' and above
+    {stream: process.stdout, level: 'info'},
+    // And log to Stackdriver Logging, logging at 'info' and above
+    loggingBunyan.stream('info'),
+  ],
+})
+
 // obniz setting values
 const obnizDeviceId = process.env.OBNIZ_DEVICE_ID
 const obnizApiToken = process.env.OBNIZ_API_TOKEN
@@ -34,25 +49,25 @@ const payApi = new LinePay({
 
 router.post('/request', async (req, res) => {
   const data = req.body
-  consola.log('Passed data', data)
+  logger.info('Passed data', data)
   const item = data.item
   const accessToken = data.accessToken
   const userId = await verifyAndGetLineUserId(accessToken)
-  consola.log('LINE userId', userId)
+  logger.info('LINE userId', userId)
   // set Order info before Pay Request
   const order = await generateOrder(userId, item)
   const payOptions = setupPayOption(req, item)
   await payApi
     .request(payOptions)
     .then(async (response) => {
-      consola.log(`LINE Pay Request API result`, response)
+      logger.info(`LINE Pay Request API result`, response)
       order.transactionId = response.info.transactionId
       order.payStatus = 'REQUESTED'
       // API Result
-      consola.log(`Return code: ${response.returnCode}`)
-      consola.log(`Return message: ${response.returnMessage}`)
-      consola.log(`Reservation was made. Detail is following.`)
-      consola.log(`Order: ${order}`)
+      logger.info(`Return code: ${response.returnCode}`)
+      logger.info(`Return message: ${response.returnMessage}`)
+      logger.info(`Reservation was made. Detail is following.`)
+      logger.info(`Order: ${order}`)
       // Update requested order
       await setOrder(order)
       // return LINE Pay payment URL to front
@@ -62,7 +77,7 @@ router.post('/request', async (req, res) => {
     })
     .catch((error) => {
       // error
-      consola.log(`Error at LINE Pay Request API...: ${error}`)
+      logger.info(`Error at LINE Pay Request API...: ${error}`)
     })
 })
 
@@ -126,18 +141,18 @@ function setupPayOption(req, item) {
 
 router.post('/confirm', async (req, res) => {
   const data = req.body
-  consola.log('Passed data', data)
+  logger.info('Passed data', data)
   const transactionId = data.transactionId
-  consola.log('transactionId', transactionId)
+  logger.info('transactionId', transactionId)
   const accessToken = data.accessToken
   const userId = await verifyAndGetLineUserId(accessToken)
   // Get order info by userId and transactionId
   const order = await getOrderByTransactionId(userId, transactionId)
   // Pay Confirm
   const confirmedOrder = await confirmPayment(order)
-  consola.log('Confirmed order', confirmedOrder)
+  logger.info('Confirmed order', confirmedOrder)
   if (confirmedOrder) {
-    consola.info('Payment completed!')
+    logger.info('Payment completed!')
     // Dispense drink
     dispenseDrink(order.item.slot, order.item.dispenseTime)
     // Draw Lots
@@ -147,7 +162,7 @@ router.post('/confirm', async (req, res) => {
     order.drawLotsAt = new Date()
   } else {
     // Confirm failed
-    consola.error('Payment failed...')
+    logger.error('Payment failed...')
     order.payStatus = 'PAYMENT_ERROR'
   }
   // Update Order
@@ -173,13 +188,13 @@ function confirmPayment(order) {
     payApi
       .confirm(options)
       .then((response) => {
-        consola.log('LINE Pay Confirm API Response', JSON.stringify(response))
+        logger.info('LINE Pay Confirm API Response', JSON.stringify(response))
         // Pay complete
         order.payStatus = 'PAYMENT_COMPLETED'
         resolve(order)
       })
       .catch((error) => {
-        consola.error('Error at LINE Pay Confirm API', error)
+        logger.error('Error at LINE Pay Confirm API', error)
         // Return null when Confirm API failed
         resolve(null)
       })
@@ -204,7 +219,7 @@ function dispenseDrink(slot, dispenseTime) {
     })
     obniz.connect()
     obniz.onconnect = function() {
-      consola.info('Connected to your obniz device!! [', obnizDeviceId, ']')
+      logger.info('Connected to your obniz device!! [', obnizDeviceId, ']')
       obniz.display.clear()
       obniz.display.print('LINE Pay Drink Bar')
       // Dispense setting
@@ -250,14 +265,14 @@ async function verifyAndGetLineUserId(accessToken) {
   try {
     await verifyAccessToken(accessToken)
   } catch (error) {
-    consola.error('Verify access token failed...', error)
+    logger.error('Verify access token failed...', error)
     return new Error('Verify access token failed...', error)
   }
   try {
     const profile = await getLineProfile(accessToken)
     return profile.userId
   } catch (error) {
-    consola.error('Get LINE user id failed...', error)
+    logger.error('Get LINE user id failed...', error)
     return new Error('Get LINE user id failed...', error)
   }
 }
@@ -265,10 +280,10 @@ async function verifyAndGetLineUserId(accessToken) {
 async function verifyAccessToken(accessToken) {
   const url = `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
   return request.getAsync({url, json: true}).then((response) => {
-    consola.log('Response', response.body)
-    consola.log('Status Code', response.statusCode)
+    logger.info('Response', response.body)
+    logger.info('Status Code', response.statusCode)
     if (response.statusCode !== 200) {
-      consola.error(response.body.error_description)
+      logger.error(response.body.error_description)
       return Promise.reject(new Error(response.body.error))
     }
     // Check client_id
@@ -292,13 +307,13 @@ async function getLineProfile(accessToken) {
     headers,
     json: true
   }).then((response) => {
-    consola.log('Response', response.body)
-    consola.log('Status Code', response.statusCode)
+    logger.info('Response', response.body)
+    logger.info('Status Code', response.statusCode)
     if (response.statusCode !== 200) {
-      consola.error(response.body.error_description)
+      logger.error(response.body.error_description)
       return Promise.reject(new Error(response.body.error))
     }
-    consola.log('LINE Profile', response.body)
+    logger.info('LINE Profile', response.body)
     return response.body
   })
 }
