@@ -10,18 +10,10 @@ const Promise = require('bluebird')
 Promise.promisifyAll(request)
 
 const bunyan = require('bunyan')
-const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 
-//
-const loggingBunyan = new LoggingBunyan()
+// Initialize logger
 const logger = bunyan.createLogger({
   name: 'LinePayDrinkBar-Pay',
-  streams: [
-    // Log to the console at 'info' and above
-    {stream: process.stdout, level: 'info'},
-    // And log to Stackdriver Logging, logging at 'info' and above
-    loggingBunyan.stream('info'),
-  ],
 })
 
 // obniz setting values
@@ -32,7 +24,7 @@ const obnizApiToken = process.env.OBNIZ_API_TOKEN
 admin.initializeApp({
   credential: admin.credential.cert({
     "project_id": process.env.FIREBASE_PROJECT_ID,
-    "private_key": process.env.FIREBASE_PRIVATE_KEY,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     "client_email": process.env.FIREBASE_CLIENT_EMAIL,
   }),
   databaseURL: process.env.FIREBASE_DATABASE_URL

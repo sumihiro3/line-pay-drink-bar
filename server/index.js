@@ -3,18 +3,11 @@ const bodyParser = require('body-parser')
 const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
 const bunyan = require('bunyan')
-const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
+// const { LoggingBunyan } = require('@google-cloud/logging-bunyan')
 
-//
-const loggingBunyan = new LoggingBunyan()
+// Initialize logger
 const logger = bunyan.createLogger({
   name: 'LinePayDrinkBar',
-  streams: [
-    // Log to the console at 'info' and above
-    {stream: process.stdout, level: 'info'},
-    // And log to Stackdriver Logging, logging at 'info' and above
-    loggingBunyan.stream('info'),
-  ],
 })
 
 // Show environment values
